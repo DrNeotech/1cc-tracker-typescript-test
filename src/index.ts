@@ -1430,7 +1430,10 @@ async function exportSaveFile() {
         }
     });
 
-    const compressedStream = readableStream.pipeThrough(new CompressionStream('gzip'));
+    const compressionStream = (window as Window & {
+        CompressionStream: new (format: 'gzip') => TransformStream<Uint8Array, Uint8Array>;
+    }).CompressionStream;
+    const compressedStream = readableStream.pipeThrough(new compressionStream('gzip'));
     const response = new Response(compressedStream);
     const blob = await response.blob();
 
@@ -1448,7 +1451,10 @@ async function importSaveFile(file: File | undefined) {
         return;
     }
 
-    const decompressedStream = file.stream().pipeThrough(new DecompressionStream('gzip'));
+    const decompressionStream = (window as Window & {
+        DecompressionStream: new (format: 'gzip') => TransformStream<Uint8Array, Uint8Array>;
+    }).DecompressionStream;
+    const decompressedStream = file.stream().pipeThrough(new decompressionStream('gzip'));
     const jsonString = await new Response(decompressedStream).text();
     const data: unknown = JSON.parse(jsonString);
     if (!data || typeof data !== 'object' || Array.isArray(data) ||
