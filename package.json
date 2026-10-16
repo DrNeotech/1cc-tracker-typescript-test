@@ -3,6 +3,6 @@
     "typescript": "^4.5.5"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.json && node scripts/copy-assets.js"
+    "build": "tsc --project tsconfig.json && mkdir -p dist/fonts && cp index.html dist/index.html && cp fonts/*.ttf dist/fonts/"
   }
 }
